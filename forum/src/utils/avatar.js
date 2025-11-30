@@ -1,0 +1,1 @@
+export const DEFAULT_AVATAR = 'https://p2.ssl.qhimgs1.com/sdr/400__/t01dfc4ef436d447c38.jpg';
