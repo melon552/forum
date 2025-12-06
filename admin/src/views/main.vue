@@ -56,6 +56,9 @@ watch(
       case '/tale/list':
         breadcrumbList.value = [{ name: '故事列表', link: '/tale/list' }];
         break;
+      case '/comment/list':
+        breadcrumbList.value = [{ name: '评论列表', link: '/comment/list' }];
+        break;
       case '/person':
         breadcrumbList.value = [{ name: '个人中心', link: '/person' }];
         break;

@@ -15,6 +15,7 @@ import PostDetail from '../views/detail/postDetail.vue';
 import TaleDetail from '../views/detail/taleDetail.vue';
 import Edit from '../views/edit/edit.vue';
 import Change from '../views/person/change.vue';
+import Content from '../components/ContentList.vue';
 //定义路由
 const routes = [
   { path: '/login', component: Login, meta: { type: 'login' } },
@@ -23,12 +24,14 @@ const routes = [
     path: '/',
     component: Layout,
     meta: { requiresAuth: true },
+
     children: [
       { path: '', component: Home },
       { path: 'storylist', component: StoryList, meta: { title: '故事列表' } },
       { path: 'postlist', component: PostList, meta: { title: '帖子列表' } },
       { path: 'publishpost', component: PublishPost, meta: { title: '发布帖子' } },
       { path: 'publishstory', component: PublishStory, meta: { title: '发布故事' } },
+
       {
         path: 'person', component: Person, meta: { title: '个人中心' },
         children: [
@@ -38,9 +41,12 @@ const routes = [
         ]
       },
       { path: '/detail/:type/:id', name: 'Detail', component: TaleDetail, meta: { title: '详情页' } },
-      { path: '/edit/:type/:id/', name: 'Edit', component: Edit, meta: { title: '编辑页' } }
+      { path: '/edit/:type/:id/', name: 'Edit', component: Edit, meta: { title: '编辑页' } },
+      { path: '/content/:type', name: 'Content', component: Content, meta: { title: '故事', hideSidebar: true } },
     ]
   },
+
+
 ]
 
 // //路由守卫，验证用户登陆状态

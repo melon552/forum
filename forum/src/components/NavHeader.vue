@@ -4,21 +4,22 @@
     <div class="logo" @click="goToHome">贴吧</div>
     
     <!-- 自定义导航链接（替代el-menu） -->
-    <div class="nav-links">
-      <a 
-        href="/storylist" 
-        class="nav-link" 
-        :class="{ active: currentPath === '/storylist' }"
+    <div class="tab-bar">
+      <!-- 这里的 active 判断要基于 route.params -->
+      <div 
+        class="tab-item" 
+        :class="{ active: currentTab === 'tale' }"
+        @click="switchTab('tale')"
       >
         故事
-      </a>
-      <a 
-        href="/postlist" 
-        class="nav-link" 
-        :class="{ active: currentPath === '/postlist' }"
+      </div>
+      <div 
+        class="tab-item" 
+        :class="{ active: currentTab === 'post' }"
+        @click="switchTab('post')"
       >
         帖子
-      </a>
+      </div>
     </div>
     
     <!-- 搜索框 -->
@@ -79,25 +80,55 @@
       </div>
     </div>
   </div>
+  
+  
 </template>
 
 <script setup>
-import { ref, onMounted, watch, computed } from 'vue';
-import { useRouter } from 'vue-router';
+import { ref, onMounted, watch,computed } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
 import { useUserStore } from '../store/user';
-import { getCollects } from '../api/'; // 仅引入收藏接口
+import { getCollects } from '../api/';
+import ContentList from './ContentList.vue';
 
 const router = useRouter();
-const activeIndex = ref('story');
+const route = useRoute();
+
 const showPopup = ref(false);
 const userStore = useUserStore();
-const collectData = ref({}); // 存储收藏接口返回的完整数据
+const collectData = ref({});
 
-// 计算收藏总数、故事数、帖子数
+
+
+const currentActiveTab = computed(() => {
+  return route.params.type || 'tale';
+});
+
+const switchTab = (tab) => {
+  console.log("跳转到:", tab);
+  // 核心修改：跳转到你在 router/index.js 里定义的 'Content' 路由
+  router.push({ 
+    name: 'Content', // 对应路由配置中的 name: 'Content'
+    params: { type: tab } 
+  });
+};
+// 监听路由参数变化
+watch(
+  () => route.params.type,
+  (newType) => {
+    if (newType) {
+      currentActiveTab.value = newType;
+    }
+  },
+  { immediate: true }
+);
+
+// 计算属性
 const collectCount = computed(() => collectData.value.totalCollected || 0);
 const storyCount = computed(() => (collectData.value.collectedTales || []).length);
 const postCount = computed(() => (collectData.value.collectedPosts || []).length);
 
+// 其他方法不变
 const goToProfile = () => router.push('/person');
 const changePassword = () => router.push('/person/change');
 const logout = () => {
@@ -105,26 +136,18 @@ const logout = () => {
   router.push('/login');
 };
 
-// 调用收藏接口获取数据
 const fetchCollectData = async () => {
   const res = await getCollects();
   collectData.value = res.data.data || {};
 };
 
-// 监听头像变化，实时更新
-watch(
-  () => userStore.info.avatar,
-  (newAvatar) => {
-    console.log('导航栏头像路径（监听）：', newAvatar);
-  },
-  { immediate: true, deep: true }
-);
-
-// 组件挂载时获取用户信息和收藏数据
 onMounted(() => {
   userStore.fetchUserInfo();
-  console.log('导航栏初始化头像：', userStore.info.avatar);
   fetchCollectData();
+  
+  // if (contentListRef.value) {
+  //   contentListRef.value.refresh(currentType.value);
+  // }
 });
 </script>
 
@@ -171,46 +194,30 @@ onMounted(() => {
   color: #34a06a;
 }
 
-/* 自定义导航链接（核心替换el-menu） */
-.nav-links {
+.tab-bar {
   display: flex;
-  gap: 30px;
+  border-bottom: 1px solid #eee;
   margin-right: auto;
-  /* color: #05c46b */
 }
 
-.nav-link {
+.tab-item {
+  padding: 0 20px;
+  height: 70px;
+  line-height: 70px;
   font-size: 17px;
-  color: var(--text-secondary);
-  text-decoration: none;
-  padding: 8px 12px;
-  border-radius: 8px;
-  transition: all 0.3s ease;
-  position: relative;
+  color: #666;
+  cursor: pointer;
+  transition: all 0.3s;
 }
-
-/* 激活状态样式 */
-.nav-link.active {
-  color: var(--primary);
+.tab-item.active {
+  color: #42b983;
   font-weight: 500;
+  border-bottom: 3px solid #42b983;
 }
 
-/* 激活状态下划线 */
-.nav-link.active::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 12px;
-  width: calc(100% - 24px);
-  height: 3px;
-  background-color: var(--primary);
-  border-radius: 3px;
-}
-
-/* 悬停效果 */
-.nav-link:hover {
-  color: var(--primary);
-  background-color: var(--primary-light);
+.tab-item:hover {
+  color: #42b983;
+  background-color: #f5fafe;
 }
 
 /* 搜索框样式 */

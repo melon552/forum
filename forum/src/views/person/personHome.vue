@@ -46,7 +46,7 @@
             <div class="item-title">{{ item.title }}</div>
             <div class="item-meta">
               <span>作者: {{ item.userInfo?.username || item.authorInfo?.username || '未知作者' }}</span>
-              <span>收藏数: {{ item.collectionNumber || 0 }}</span>
+              <span>收藏数: {{ item.whoCollection.length || 0 }}</span>
               <span>发布时间: {{ formatTime(item.time) }}</span>
             </div>
           </div>

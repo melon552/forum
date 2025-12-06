@@ -52,6 +52,18 @@
           <template #title>故事列表</template>
         </el-menu-item>
       </el-sub-menu>
+
+      <!-- 评论管理 -->
+      <el-sub-menu index="comment" class="menu-level-1">
+        <template #title>
+          <el-icon :size="20"><ChatDotRound /></el-icon>
+          <span>评论管理</span>
+        </template>
+        <el-menu-item index="/comment/list" class="menu-level-2">
+          <el-icon :size="18"><ChatDotRound /></el-icon>
+          <template #title>评论列表</template>
+        </el-menu-item>
+      </el-sub-menu>
     </el-menu>
   </div>
 </template>
@@ -59,7 +71,7 @@
 <script setup>
 import { ref, onMounted, watch } from 'vue';
 import { useRouter, useRoute } from 'vue-router'; // 导入路由钩子
-import { House, User, Document, Reading } from '@element-plus/icons-vue'; // 确保导入图标
+
 
 const router = useRouter();
 const route = useRoute();

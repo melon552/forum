@@ -7,6 +7,7 @@ import PostList from '../views/post/postList.vue';
 import TaleList from '../views/tale/taleList.vue';
 import Person from '../views/person/person.vue';
 import ChangePwd from '../views/person/changePwd.vue';
+import CommentList from '../views/comment/commentList.vue';
 const routes = [
   { path: '/login', component: Login, meta: { type: 'login' } },
   { path: '/register', component: Login, meta: { type: 'register' } },
@@ -18,6 +19,7 @@ const routes = [
       { path: 'user/list', component: UserList, meta: { type: 'user', title: '用户管理' } }, // 规范路径命名
       { path: 'post/list', component: PostList, meta: { type: 'post', title: '帖子管理' } },
       { path: 'tale/list', component: TaleList, meta: { type: 'tale', title: '故事管理' } },
+      { path: 'comment/list', component: CommentList, meta: { type: 'comment', title: '评论管理' } },
       { path: '/person', component: Person, meta: { type: 'person' } },
       { path: '/changepassword', component: ChangePwd, meta: { type: 'changePwd' } }
     ]

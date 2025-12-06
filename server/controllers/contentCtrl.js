@@ -27,14 +27,14 @@ exports.getRecommendContent = async (req, res, next) => {
     const postQuery = Post.findAll({
       attributes: [
         'postId', 'title', 'content', 'type', 'goodNumber', 'lookNumber', 'time',
-        'authorId',
+        'authorId', 'Comment', 'whoCollection',
         [sequelize.literal(`'post'`), 'contentType'] // 恢复contentType字段
       ],
       where: commonWhere,
       include: [{
         model: User,
         as: 'userInfo',
-        attributes: ['username', 'avatar']
+        attributes: ['username', 'avatar', 'introduction']
       }],
       limit: limitNum, // 使用转换后的数字类型
       offset: offset // 使用转换后的数字类型
@@ -44,14 +44,14 @@ exports.getRecommendContent = async (req, res, next) => {
     const taleQuery = Tale.findAll({
       attributes: [
         'taleId', 'title', 'content', 'type', 'goodNumber', 'lookNumber', 'time',
-        'authorId',
+        'authorId', 'Comment', 'whoCollection',
         [sequelize.literal(`'tale'`), 'contentType'] // 恢复contentType字段
       ],
       where: commonWhere,
       include: [{
         model: User,
         as: 'authorInfo',
-        attributes: ['username', 'avatar']
+        attributes: ['username', 'avatar', 'introduction']
       }],
       limit: limitNum, // 使用转换后的数字类型
       offset: offset // 使用转换后的数字类型
@@ -104,9 +104,12 @@ exports.getRecommendContent = async (req, res, next) => {
           goodNumber: item.goodNumber || 0,
           lookNumber: item.lookNumber || 0,
           time: item.time,
+          Comment: item.Comment,
+          whoCollection: item.whoCollection,
           author: {
             username: item.userInfo?.username || item.authorInfo?.username || '未知用户', // 增加默认值
-            avatar: item.userInfo?.avatar || item.authorInfo?.avatar || '/default-avatar.png' // 增加默认值
+            avatar: item.userInfo?.avatar || item.authorInfo?.avatar || '/default-avatar.png',// 增加默认值
+            introduction: item.userInfo?.introduction || '暂无内容',
           }
         })),
         pagination: {

@@ -1,9 +1,11 @@
 // controllers/adminCtrl.js
 const Admin = require('../models/Admin');
 const User = require('../models/User')
+const Comment = require('../models/Comment')
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const { Op } = require('sequelize')
+const { sequelize } = require('../models'); // 引入Sequelize实例
 // 获取所有用户列表
 exports.getAllUsers = async (req, res, next) => {
   try {
@@ -227,3 +229,100 @@ exports.updateAdminPassword = async (req, res, next) => {
     next(err);
   }
 };
+
+
+
+//获取评论列表
+exports.getAdminCommentList = async (req, res, next) => {
+  try {
+    // 解析查询参数：分页、筛选条件
+    const {
+      page = 1,
+      limit = 10,
+      sourceType = '', // 来源类型：post（帖子）/tale（故事）
+      status = '', // 状态：normal（正常）/deleted（已删除）
+      keyword = '' // 搜索关键词（评论内容/用户名）
+    } = req.query;
+
+    // 计算分页偏移量
+    const offset = (page - 1) * limit;
+
+    // 构建查询条件
+    const whereCondition = {};
+    // 按来源类型筛选（帖子/故事）
+    if (sourceType) {
+      whereCondition.sourceType = sourceType;
+    }
+    // 按状态筛选（正常/已删除）
+    if (status) {
+      whereCondition.status = status;
+    }
+    // 关键词搜索（评论内容或评论者用户名）
+    if (keyword) {
+      whereCondition[Op.or] = [
+        { content: { [Op.like]: `%${keyword}%` } }, // 评论内容模糊匹配
+        { userName: { [Op.like]: `%${keyword}%` } } // 评论者用户名模糊匹配
+      ];
+    }
+
+    // 执行查询（关联查询可能的关联表，如用户表，根据实际模型调整）
+    const { count, rows } = await Comment.findAndCountAll({
+      where: whereCondition,
+      limit: parseInt(limit),
+      offset: parseInt(offset),
+      order: [['time', 'DESC']], // 按创建时间倒序
+      attributes: { exclude: [] } // 按需排除字段，如无则留空
+    });
+
+    res.json({
+      code: 200,
+      msg: '获取评论列表成功',
+      data: {
+        total: count,
+        list: rows,
+        page: parseInt(page),
+        limit: parseInt(limit)
+      }
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+
+
+
+//删除评论
+// 删除评论（通过路径参数:commentId传递单个ID）
+exports.deleteComment = async (req, res, next) => {
+  try {
+    // 从URL路径参数中获取评论ID
+    const { commentId } = req.params;
+
+    // 1. 校验参数：commentId必须存在且为有效数字
+    if (!commentId || isNaN(Number(commentId))) {
+      return res.status(400).json({ code: 400, msg: '请提供有效的评论ID' });
+    }
+
+    // 2. 执行删除操作（按ID精确匹配）
+    const deleteCount = await Comment.destroy({
+      where: { commentId: Number(commentId) } // 转换为数字类型匹配数据库
+    });
+
+    // 3. 校验删除结果
+    if (deleteCount === 0) {
+      return res.status(404).json({ code: 404, msg: '评论不存在或已被删除' });
+    }
+
+    // 4. 返回成功响应
+    res.json({
+      code: 200,
+      msg: '评论删除成功',
+      data: { commentId: Number(commentId) } // 返回删除的评论ID
+    });
+
+  } catch (err) {
+    next(err);
+  }
+};
+

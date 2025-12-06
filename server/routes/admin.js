@@ -26,5 +26,8 @@ router.get('/report', adminAuth, checkAdmin, statsCtrl.getOperationalReport)
 router.post('/register', adminCtrl.register);
 router.post('/login', adminCtrl.login);
 
-
+//获取评论列表
+router.get('/commentList', adminCtrl.getAdminCommentList)
+//删除评论
+router.delete('/:commentId', adminCtrl.deleteComment)
 module.exports = router;

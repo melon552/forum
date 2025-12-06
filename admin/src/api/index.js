@@ -98,3 +98,23 @@ export const updateAdminInfo = (data) => {
 export const updateAdminPassword = (data) => {
   return request.put('/api/admin/password', data)
 }
+
+export const getAdminCommentList = (params) => {
+  return request.get('/api/admin/commentList', { params })
+}
+
+// export const deleteComment = (commentId) => {
+//   return request.delete(`/api/admin/${commentId}`, data)
+// }
+
+export const deleteComment = (commentId) => {
+  // 1. 强制转换为数字，避免非数字ID
+  const id = Number(commentId);
+  if (isNaN(id)) {
+    return Promise.reject(new Error('评论ID无效'));
+  }
+
+  return request.delete(`/api/admin/${id}`);
+};
+
+

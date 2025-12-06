@@ -250,7 +250,7 @@ exports.getUserCollectedInfo = async (req, res, next) => {
       },
       attributes: [
         'postId', 'title', 'cover', 'time', 'goodNumber', 'lookNumber',
-        'type', 'isPublish'
+        'type', 'isPublish', 'whoCollection'
       ],
       include: [{
         model: User,
@@ -270,7 +270,7 @@ exports.getUserCollectedInfo = async (req, res, next) => {
       },
       attributes: [
         'taleId', 'title', 'cover', 'time', 'goodNumber', 'lookNumber',
-        'type', 'isPublish'
+        'type', 'isPublish', 'whoCollection'
       ],
       include: [{
         model: User,
